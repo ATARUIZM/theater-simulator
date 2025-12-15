@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>映画館 会員シミュレーター</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>映画館 会員シミュレーター</h1>
+  </header>
+
+  <main>
+    <!-- 入力ページ -->
+    <section id="page-input" class="page active">
+
+      <!-- 映画館選択 -->
+      <div class="card card-price">
+        <div class="section-label">映画館選択</div>
+        <h2>対象の映画館を選ぶ</h2>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="brand" value="toho" checked>
+            TOHOシネマズ
+          </label>
+          <label>
+            <input type="radio" name="brand" value="cinema109">
+            109シネマズ
+          </label>
+        </div>
+        <p class="muted" style="margin-top:8px;">
+          選択した映画館に合わせて、下の料金設定や会員プランの初期値が切り替わります。
+        </p>
+      </div>
+
+      <!-- 料金設定パート：映画 -->
+      <div class="card card-price">
+        <div class="section-label">料金設定</div>
+        <h2>映画料金（料金設定）</h2>
+        <div class="grid grid-cols-3">
+          <div>
+            <label for="priceNormal">通常料金（1回あたり）</label>
+            <input id="priceNormal" type="number" min="0" value="2000">
+            <div class="field-note">例：TOHO 2000円 / 109 1900円 など</div>
+          </div>
+          <div>
+            <label for="priceLate">レイトショー料金（1回あたり）</label>
+            <input id="priceLate" type="number" min="0" value="1500">
+            <div class="field-note">例：TOHO 1500円 / 109 1300〜1500円 など</div>
+          </div>
+          <div>
+            <label for="priceService">サービスデー / メンバーデー料金</label>
+            <input id="priceService" type="number" min="0" value="1300">
+            <div class="field-note">例：メンバーズデイ 1300円</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;" class="grid grid-cols-3">
+          <div>
+            <label for="priceIMAX">IMAX追加料金（1回あたり）</label>
+            <input id="priceIMAX" type="number" min="0" value="600">
+            <div class="field-note">例：TOHO +600円 / 109 +700円</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 料金設定パート：コンセッション -->
+      <div class="card card-price">
+        <div class="section-label">料金設定</div>
+        <h2>コンセッション（料金設定）</h2>
+        <div class="grid grid-cols-2">
+          <div>
+            <label for="concessionAmount">1会計あたりのコンセッション金額</label>
+            <input id="concessionAmount" type="number" min="0" value="860">
+            <div class="field-note">
+              例：ポップコーンセット 860円 など
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 料金設定パート：物販 -->
+      <div class="card card-price">
+        <div class="section-label">料金設定</div>
+        <h2>物販（料金設定）</h2>
+        <div class="grid grid-cols-2">
+          <div>
+            <label for="goodsAmount">1会計あたりの物販金額</label>
+            <input id="goodsAmount" type="number" min="0" value="1000">
+            <div class="field-note">
+              例：パンフレット 1000円 など
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- シミュレーションパート：映画回数 -->
+      <div class="card card-sim">
+        <div class="section-label">シミュレーション条件</div>
+        <h2>年間の映画鑑賞数</h2>
+        <div class="grid grid-cols-3">
+          <div>
+            <label for="countNormal">通常料金で観る回数（年）</label>
+            <input id="countNormal" type="number" min="0" value="10">
+          </div>
+          <div>
+            <label for="countLate">レイトショーの回数（年）</label>
+            <input id="countLate" type="number" min="0" value="5">
+          </div>
+          <div>
+            <label for="countService">サービスデー / メンバーデーの回数（年）</label>
+            <input id="countService" type="number" min="0" value="3">
+          </div>
+        </div>
+
+        <div style="margin-top:16px;" class="grid grid-cols-3">
+          <div>
+            <label for="countIMAX">IMAXで観る回数（年）</label>
+            <input id="countIMAX" type="number" min="0" value="2">
+            <div class="field-note">
+              「通常料金で観る回数」のうち、IMAXで観る回数のイメージです。
+            </div>
+          </div>
+        </div>
+
+        <div class="muted" style="margin-top:8px;">
+          ※合計本数 ＝ 通常＋レイトショー＋サービスデー（IMAXは「通常の一部」として追加料金のみ加算）
+        </div>
+      </div>
+
+      <!-- シミュレーションパート：コンセッション頻度 -->
+      <div class="card card-sim">
+        <div class="section-label">シミュレーション条件</div>
+        <h2>コンセッションの利用頻度</h2>
+        <label>映画鑑賞に対して、どのくらいの頻度でコンセッションを購入しますか？</label>
+        <div class="radio-group" style="margin-top:8px;">
+          <label><input type="radio" name="concessionFreq" value="0" checked> 0回（買わない）</label>
+          <label><input type="radio" name="concessionFreq" value="1"> 毎回（1/1）</label>
+          <label><input type="radio" name="concessionFreq" value="2"> 2回に1回（1/2）</label>
+          <label><input type="radio" name="concessionFreq" value="3"> 3回に1回（1/3）</label>
+          <label><input type="radio" name="concessionFreq" value="4"> 4回に1回（1/4）</label>
+        </div>
+      </div>
+
+      <!-- シミュレーションパート：物販頻度 -->
+      <div class="card card-sim">
+        <div class="section-label">シミュレーション条件</div>
+        <h2>物販の利用頻度</h2>
+        <label>映画鑑賞に対して、どのくらいの頻度で物販（パンフレット等）を購入しますか？</label>
+        <div class="radio-group" style="margin-top:8px;">
+          <label><input type="radio" name="goodsFreq" value="0" checked> 0回（買わない）</label>
+          <label><input type="radio" name="goodsFreq" value="1"> 毎回（1/1）</label>
+          <label><input type="radio" name="goodsFreq" value="2"> 2回に1回（1/2）</label>
+          <label><input type="radio" name="goodsFreq" value="3"> 3回に1回（1/3）</label>
+          <label><input type="radio" name="goodsFreq" value="4"> 4回に1回（1/4）</label>
+        </div>
+      </div>
+
+      <div class="card card-sim">
+        <h2>計算</h2>
+        <p class="muted">
+          下のボタンを押すと、選択した映画館について、<br>
+          ・会員にならない場合<br>
+          ・各種会員サービス<br>
+          を比較して、支払総額・無料鑑賞回数・お得額を計算します。<br><br>
+          映画料金 / コンセッション / 物販はレジが別なので、<br>
+          「1会計ごとのポイント付与」を前提に計算します。<br>
+          IMAXは「通常料金に追加料金が乗る」イメージで、<br>
+          通常鑑賞のうち指定回数分に追加料金を加算してポイントを計算します。
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btnCalc">
+            結果を表示する
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 結果ページ -->
+    <section id="page-result" class="page">
+      <div class="card">
+        <h2>結果サマリー</h2>
+        <div id="resultSummary" class="summary"></div>
+      </div>
+
+      <div class="card">
+        <h2>詳細比較表</h2>
+        <div style="overflow-x:auto">
+          <table class="result-table" id="resultTable">
+            <thead>
+            <tr>
+              <th>プラン</th>
+              <th>年会費</th>
+              <th>チケット支出</th>
+              <th>コンセッション支出</th>
+              <th>物販支出</th>
+              <th>総支出（年会費込）</th>
+              <th>チケットP</th>
+              <th>コンセP</th>
+              <th>物販P</th>
+              <th>合計P</th>
+              <th>無料鑑賞回数</th>
+              <th>無料鑑賞相当額</th>
+              <th>実質支払額</th>
+              <th>非会員との差額</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="muted" style="margin-top:8px;">
+          ※ポイントは、<br>
+          ・TOHO ONE：レジ1会計ごとに「100円ごと2P」で計算（映画レジはIMAX追加料金込み）<br>
+          ・旧TOHOシネマズ会員サービス：映画1回鑑賞で1P（コンセ・物販は対象外）<br>
+          ・109シネマズ シネマポイントカード：映画1回鑑賞で1P（コンセ・物販は対象外）<br><br>
+          「実質支払額」＝チケット＋コンセッション＋物販＋年会費 − 無料鑑賞相当額<br>
+          「非会員との差額」＝（非会員の実質支払額 − 該当プランの実質支払額）<br>
+          ＋ならお得、−なら損になります。
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btnBack">
+          入力に戻る
+        </button>
+        <button class="btn btn-primary" id="btnRecalc">
+          条件を変えて再計算
+        </button>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
