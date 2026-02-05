@@ -94,6 +94,288 @@ const BRAND_CONFIGS = {
 };
 
 // =========================
+// 初期化
+// =========================
+
+document.addEventListener('DOMContentLoaded', () => {
+    initParticles();
+    initScrollAnimations();
+    initLivePreview();
+    initInputAnimations();
+
+    // 初期表示時にTOHOデフォルトをセット
+    applyBrandDefaults(getSelectedBrand());
+
+    // 初回のリアルタイム計算
+    setTimeout(updateLivePreview, 100);
+});
+
+// =========================
+// パーティクル背景
+// =========================
+
+function initParticles() {
+    const container = document.createElement('div');
+    container.className = 'particles';
+    document.body.appendChild(container);
+
+    const particleCount = 20;
+
+    for (let i = 0; i < particleCount; i++) {
+        createParticle(container, i);
+    }
+}
+
+function createParticle(container, index) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+
+    const colors = ['#6366f1', '#f59e0b', '#22c55e', '#818cf8'];
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDuration = (15 + Math.random() * 20) + 's';
+    particle.style.animationDelay = (index * 0.5) + 's';
+    particle.style.width = (3 + Math.random() * 4) + 'px';
+    particle.style.height = particle.style.width;
+
+    container.appendChild(particle);
+}
+
+// =========================
+// スクロールアニメーション
+// =========================
+
+function initScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // カードを監視
+    document.querySelectorAll('.card').forEach(card => {
+        observer.observe(card);
+    });
+}
+
+// =========================
+// ライブプレビュー
+// =========================
+
+let livePreviewElement = null;
+let isPreviewVisible = false;
+
+function initLivePreview() {
+    // プレビューパネルを作成
+    livePreviewElement = document.createElement('div');
+    livePreviewElement.className = 'live-preview';
+    livePreviewElement.innerHTML = `
+        <div class="live-preview-header">
+            <span class="live-preview-title">リアルタイム計算</span>
+            <button class="live-preview-close" onclick="toggleLivePreview()">&times;</button>
+        </div>
+        <div class="live-preview-content">
+            <div class="live-preview-row">
+                <span class="live-preview-label">年間鑑賞数</span>
+                <span class="live-preview-value" id="preview-movies">0本</span>
+            </div>
+            <div class="live-preview-row">
+                <span class="live-preview-label">チケット支出</span>
+                <span class="live-preview-value" id="preview-ticket">0円</span>
+            </div>
+            <div class="live-preview-row">
+                <span class="live-preview-label">総支出（税込）</span>
+                <span class="live-preview-value" id="preview-total">0円</span>
+            </div>
+            <div class="live-preview-divider"></div>
+            <div class="live-preview-row">
+                <span class="live-preview-label">最安プラン</span>
+                <span class="live-preview-value highlight" id="preview-best">-</span>
+            </div>
+            <div class="live-preview-row">
+                <span class="live-preview-label">お得額</span>
+                <span class="live-preview-value highlight" id="preview-savings">0円</span>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(livePreviewElement);
+
+    // 入力フィールドの変更を監視
+    const inputs = document.querySelectorAll('input[type="number"], input[type="radio"]');
+    inputs.forEach(input => {
+        input.addEventListener('change', updateLivePreview);
+        input.addEventListener('input', debounce(updateLivePreview, 150));
+    });
+
+    // 少し遅れてプレビューを表示
+    setTimeout(() => {
+        livePreviewElement.classList.add('show');
+        isPreviewVisible = true;
+    }, 1000);
+}
+
+function toggleLivePreview() {
+    isPreviewVisible = !isPreviewVisible;
+    if (isPreviewVisible) {
+        livePreviewElement.classList.add('show');
+    } else {
+        livePreviewElement.classList.remove('show');
+    }
+}
+
+function updateLivePreview() {
+    const brand = getSelectedBrand();
+    const input = readInputs();
+    const results = calculateAllPlans(input, brand);
+
+    // 最安プランを見つける
+    const best = results.reduce((acc, cur) =>
+        cur.effectiveCost < acc.effectiveCost ? cur : acc
+    );
+    const nonMember = results.find(r => r.planId === 'none');
+    const savings = nonMember ? nonMember.effectiveCost - best.effectiveCost : 0;
+
+    // アニメーション付きで値を更新
+    animateValue('preview-movies', input.totalMovies, '本');
+    animateValue('preview-ticket', input.ticketTotal, '円', true);
+    animateValue('preview-total', input.ticketTotal + input.concessionTotal + input.goodsTotal, '円', true);
+
+    document.getElementById('preview-best').textContent =
+        best.planId === 'none' ? '会員不要' : best.name.replace(/シネマズ|シネマ/g, '');
+
+    animateValue('preview-savings', Math.max(0, savings), '円', true);
+}
+
+// =========================
+// 入力フィールドアニメーション
+// =========================
+
+function initInputAnimations() {
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        // ラッパーで囲む
+        const wrapper = document.createElement('div');
+        wrapper.className = 'input-wrapper';
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        // フォーカス時のリップルエフェクト
+        input.addEventListener('focus', () => {
+            wrapper.classList.add('focused');
+        });
+
+        input.addEventListener('blur', () => {
+            wrapper.classList.remove('focused');
+        });
+    });
+}
+
+// =========================
+// カウントアップアニメーション
+// =========================
+
+function animateValue(elementId, endValue, suffix = '', format = false) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    const startValue = parseInt(element.textContent.replace(/[^0-9-]/g, '')) || 0;
+    const duration = 300;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // イージング関数
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+
+        const currentValue = Math.round(startValue + (endValue - startValue) * easeOutQuart);
+
+        if (format) {
+            element.textContent = currentValue.toLocaleString('ja-JP') + suffix;
+        } else {
+            element.textContent = currentValue + suffix;
+        }
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+function countUp(element, endValue, duration = 1000, suffix = '') {
+    const startValue = 0;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // イージング
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+
+        const currentValue = Math.round(startValue + (endValue - startValue) * easeOutQuart);
+        element.textContent = currentValue.toLocaleString('ja-JP') + suffix;
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+// =========================
+// ローディング表示
+// =========================
+
+function showLoading() {
+    let overlay = document.querySelector('.loading-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-spinner"></div>
+            <div class="loading-text">計算中...</div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    requestAnimationFrame(() => {
+        overlay.classList.add('show');
+    });
+}
+
+function hideLoading() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
+}
+
+// =========================
+// ユーティリティ
+// =========================
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// =========================
 // ページ制御
 // =========================
 
@@ -106,11 +388,34 @@ const btnRecalc = document.getElementById("btnRecalc");
 function showPage(id) {
     pageInput.classList.remove("active");
     pageResult.classList.remove("active");
+
     if (id === "input") {
-    pageInput.classList.add("active");
+        pageInput.classList.add("active");
+        // プレビューを表示
+        if (livePreviewElement) {
+            setTimeout(() => {
+                livePreviewElement.classList.add('show');
+                isPreviewVisible = true;
+            }, 300);
+        }
     } else {
-    pageResult.classList.add("active");
+        pageResult.classList.add("active");
+        // プレビューを非表示
+        if (livePreviewElement) {
+            livePreviewElement.classList.remove('show');
+            isPreviewVisible = false;
+        }
+
+        // 結果ページのカードをアニメーション
+        setTimeout(() => {
+            document.querySelectorAll('#page-result .card').forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, index * 150);
+            });
+        }, 100);
     }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -132,6 +437,9 @@ function applyBrandDefaults(brand) {
     document.getElementById("priceIMAX").value = d.priceIMAX;
     document.getElementById("concessionAmount").value = d.concessionAmount;
     document.getElementById("goodsAmount").value = d.goodsAmount;
+
+    // プレビューを更新
+    updateLivePreview();
 }
 
 // 映画館選択変更でデフォルトを切り替え
@@ -143,15 +451,17 @@ brandRadios.forEach(r => {
     });
 });
 
-// 初期表示時にTOHOデフォルトをセット
-applyBrandDefaults(getSelectedBrand());
-
 btnCalc.addEventListener("click", () => {
-    const brand = getSelectedBrand();
-    const input = readInputs();
-    const results = calculateAllPlans(input, brand);
-    renderResults(input, results, brand);
-    showPage("result");
+    showLoading();
+
+    setTimeout(() => {
+        const brand = getSelectedBrand();
+        const input = readInputs();
+        const results = calculateAllPlans(input, brand);
+        renderResults(input, results, brand);
+        hideLoading();
+        showPage("result");
+    }, 600);
 });
 
 // =========================
@@ -379,7 +689,7 @@ function renderResults(input, results, brand) {
     const minEffective = Math.min(...results.map(r => r.effectiveCost));
     const non = results.find(r => r.planId === "none");
 
-    results.forEach(r => {
+    results.forEach((r, index) => {
     const tr = document.createElement("tr");
     if (r.effectiveCost === minEffective && r.planId !== "none") {
         tr.classList.add("result-highlight");
@@ -390,24 +700,36 @@ function renderResults(input, results, brand) {
             ? '<span class="badge badge-best">最安</span>'
             : ""
         }</td>
-        <td>${fmtYen(r.annualFee)}</td>
-        <td>${fmtYen(r.ticketSpend)}</td>
-        <td>${fmtYen(r.concessionSpend)}</td>
-        <td>${fmtYen(r.goodsSpend)}</td>
-        <td>${fmtYen(r.baseCost)}</td>
-        <td>${fmtNumber(r.ticketPoints)}</td>
-        <td>${fmtNumber(r.concessionPoints)}</td>
-        <td>${fmtNumber(r.goodsPoints)}</td>
-        <td>${fmtNumber(r.totalPoints)}</td>
-        <td>${fmtNumber(r.freeTickets)}回</td>
-        <td>${fmtYen(r.freeTicketValue)}</td>
-        <td>${fmtYen(r.effectiveCost)}</td>
+        <td><span class="count-up" data-value="${r.annualFee}" data-suffix="円">${fmtYen(r.annualFee)}</span></td>
+        <td><span class="count-up" data-value="${r.ticketSpend}" data-suffix="円">${fmtYen(r.ticketSpend)}</span></td>
+        <td><span class="count-up" data-value="${r.concessionSpend}" data-suffix="円">${fmtYen(r.concessionSpend)}</span></td>
+        <td><span class="count-up" data-value="${r.goodsSpend}" data-suffix="円">${fmtYen(r.goodsSpend)}</span></td>
+        <td><span class="count-up" data-value="${r.baseCost}" data-suffix="円">${fmtYen(r.baseCost)}</span></td>
+        <td><span class="count-up" data-value="${r.ticketPoints}">${fmtNumber(r.ticketPoints)}</span></td>
+        <td><span class="count-up" data-value="${r.concessionPoints}">${fmtNumber(r.concessionPoints)}</span></td>
+        <td><span class="count-up" data-value="${r.goodsPoints}">${fmtNumber(r.goodsPoints)}</span></td>
+        <td><span class="count-up" data-value="${r.totalPoints}">${fmtNumber(r.totalPoints)}</span></td>
+        <td><span class="count-up" data-value="${r.freeTickets}" data-suffix="回">${fmtNumber(r.freeTickets)}回</span></td>
+        <td><span class="count-up" data-value="${r.freeTicketValue}" data-suffix="円">${fmtYen(r.freeTicketValue)}</span></td>
+        <td><span class="count-up" data-value="${r.effectiveCost}" data-suffix="円">${fmtYen(r.effectiveCost)}</span></td>
         <td>${
         (r.diffFromNoMember >= 0 ? "+" : "") +
         fmtYen(r.diffFromNoMember)
         }</td>
     `;
     tbody.appendChild(tr);
+
+    // 行のアニメーション
+    setTimeout(() => {
+        tr.classList.add('visible');
+
+        // カウントアップアニメーション
+        tr.querySelectorAll('.count-up').forEach(el => {
+            const value = parseInt(el.dataset.value) || 0;
+            const suffix = el.dataset.suffix || '';
+            countUp(el, value, 800, suffix);
+        });
+    }, 200 + index * 100);
     });
 
     const best = results.reduce((acc, cur) =>
