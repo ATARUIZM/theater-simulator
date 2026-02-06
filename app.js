@@ -161,6 +161,20 @@ function initScrollAnimations() {
     document.querySelectorAll('.card').forEach(card => {
         observer.observe(card);
     });
+
+    // アコーディオン内のカードは開いたときにアニメーション
+    const accordion = document.querySelector('.settings-accordion');
+    if (accordion) {
+        accordion.addEventListener('toggle', () => {
+            if (accordion.open) {
+                accordion.querySelectorAll('.card').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 100);
+                });
+            }
+        });
+    }
 }
 
 // =========================

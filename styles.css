@@ -161,6 +161,141 @@ main {
 }
 
 /* ========================================
+   Settings Accordion
+   ======================================== */
+.settings-accordion {
+  margin-bottom: 20px;
+}
+
+.settings-accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-card-price);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  list-style: none;
+}
+
+.settings-accordion-header::-webkit-details-marker {
+  display: none;
+}
+
+.settings-accordion-header:hover {
+  background: rgba(251, 146, 60, 0.15);
+  border-color: rgba(251, 146, 60, 0.5);
+}
+
+.settings-accordion-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(251, 146, 60, 0.2);
+  position: relative;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.settings-accordion-icon::before,
+.settings-accordion-icon::after {
+  content: '';
+  position: absolute;
+  background: var(--secondary);
+  border-radius: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.settings-accordion-icon::before {
+  width: 12px;
+  height: 2px;
+}
+
+.settings-accordion-icon::after {
+  width: 2px;
+  height: 12px;
+}
+
+.settings-accordion[open] .settings-accordion-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  opacity: 0;
+}
+
+.settings-accordion[open] .settings-accordion-icon {
+  background: rgba(251, 146, 60, 0.3);
+}
+
+.settings-accordion-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex-grow: 1;
+}
+
+.settings-accordion-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  transition: opacity var(--transition-fast);
+}
+
+.settings-accordion[open] .settings-accordion-hint {
+  opacity: 0;
+}
+
+.settings-accordion-content {
+  padding-top: 16px;
+  animation: accordionOpen 0.3s ease;
+}
+
+@keyframes accordionOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-accordion-content .card {
+  margin-left: 12px;
+  border-left: 3px solid rgba(251, 146, 60, 0.3);
+}
+
+.settings-accordion-content .card:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   IMAX Section Divider
+   ======================================== */
+.imax-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.3);
+}
+
+.imax-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: inline-block;
+  padding: 3px 8px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 4px;
+}
+
+/* ========================================
    Grid System
    ======================================== */
 .grid {

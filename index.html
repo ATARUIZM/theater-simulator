@@ -38,65 +38,72 @@
         </p>
       </div>
 
-      <!-- 料金設定パート：映画 -->
-      <div class="card card-price">
-        <div class="section-label">料金設定</div>
-        <h2>映画料金（料金設定）</h2>
-        <div class="grid grid-cols-3">
-          <div>
-            <label for="priceNormal">通常料金（1回あたり）</label>
-            <input id="priceNormal" type="number" min="0" value="2000">
-            <div class="field-note">例：TOHO 2000円 / 109 1900円 など</div>
+      <!-- 料金設定パート（折りたたみ） -->
+      <details class="settings-accordion">
+        <summary class="settings-accordion-header">
+          <span class="settings-accordion-icon"></span>
+          <span class="settings-accordion-title">料金設定（オプション）</span>
+          <span class="settings-accordion-hint">クリックで展開</span>
+        </summary>
+        <div class="settings-accordion-content">
+          <!-- 料金設定パート：映画 -->
+          <div class="card card-price">
+            <h2>映画料金</h2>
+            <div class="grid grid-cols-3">
+              <div>
+                <label for="priceNormal">通常料金（1回あたり）</label>
+                <input id="priceNormal" type="number" min="0" value="2000">
+                <div class="field-note">例：TOHO 2000円 / 109 1900円 など</div>
+              </div>
+              <div>
+                <label for="priceLate">レイトショー料金（1回あたり）</label>
+                <input id="priceLate" type="number" min="0" value="1500">
+                <div class="field-note">例：TOHO 1500円 / 109 1300〜1500円 など</div>
+              </div>
+              <div>
+                <label for="priceService">サービスデー / メンバーデー料金</label>
+                <input id="priceService" type="number" min="0" value="1300">
+                <div class="field-note">例：メンバーズデイ 1300円</div>
+              </div>
+            </div>
+            <div style="margin-top:16px;" class="grid grid-cols-3">
+              <div>
+                <label for="priceIMAX">IMAX追加料金（1回あたり）</label>
+                <input id="priceIMAX" type="number" min="0" value="600">
+                <div class="field-note">例：TOHO +600円 / 109 +700円</div>
+              </div>
+            </div>
           </div>
-          <div>
-            <label for="priceLate">レイトショー料金（1回あたり）</label>
-            <input id="priceLate" type="number" min="0" value="1500">
-            <div class="field-note">例：TOHO 1500円 / 109 1300〜1500円 など</div>
-          </div>
-          <div>
-            <label for="priceService">サービスデー / メンバーデー料金</label>
-            <input id="priceService" type="number" min="0" value="1300">
-            <div class="field-note">例：メンバーズデイ 1300円</div>
-          </div>
-        </div>
-        <div style="margin-top:16px;" class="grid grid-cols-3">
-          <div>
-            <label for="priceIMAX">IMAX追加料金（1回あたり）</label>
-            <input id="priceIMAX" type="number" min="0" value="600">
-            <div class="field-note">例：TOHO +600円 / 109 +700円</div>
-          </div>
-        </div>
-      </div>
 
-      <!-- 料金設定パート：コンセッション -->
-      <div class="card card-price">
-        <div class="section-label">料金設定</div>
-        <h2>コンセッション（料金設定）</h2>
-        <div class="grid grid-cols-2">
-          <div>
-            <label for="concessionAmount">1会計あたりのコンセッション金額</label>
-            <input id="concessionAmount" type="number" min="0" value="860">
-            <div class="field-note">
-              例：ポップコーンセット 860円 など
+          <!-- 料金設定パート：コンセッション -->
+          <div class="card card-price">
+            <h2>コンセッション</h2>
+            <div class="grid grid-cols-2">
+              <div>
+                <label for="concessionAmount">1会計あたりのコンセッション金額</label>
+                <input id="concessionAmount" type="number" min="0" value="860">
+                <div class="field-note">
+                  例：ポップコーンセット 860円 など
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 料金設定パート：物販 -->
+          <div class="card card-price">
+            <h2>物販</h2>
+            <div class="grid grid-cols-2">
+              <div>
+                <label for="goodsAmount">1会計あたりの物販金額</label>
+                <input id="goodsAmount" type="number" min="0" value="1000">
+                <div class="field-note">
+                  例：パンフレット 1000円 など
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- 料金設定パート：物販 -->
-      <div class="card card-price">
-        <div class="section-label">料金設定</div>
-        <h2>物販（料金設定）</h2>
-        <div class="grid grid-cols-2">
-          <div>
-            <label for="goodsAmount">1会計あたりの物販金額</label>
-            <input id="goodsAmount" type="number" min="0" value="1000">
-            <div class="field-note">
-              例：パンフレット 1000円 など
-            </div>
-          </div>
-        </div>
-      </div>
+      </details>
 
       <!-- シミュレーションパート：映画回数 -->
       <div class="card card-sim">
@@ -104,25 +111,25 @@
         <h2>年間の映画鑑賞数</h2>
         <div class="grid grid-cols-3">
           <div>
-            <label for="countNormal">通常料金で観る回数（年）</label>
+            <label for="countNormal">通常料金で観る回数</label>
             <input id="countNormal" type="number" min="0" value="10">
           </div>
           <div>
-            <label for="countLate">レイトショーの回数（年）</label>
+            <label for="countLate">レイトショーの回数</label>
             <input id="countLate" type="number" min="0" value="5">
           </div>
           <div>
-            <label for="countService">サービスデー / メンバーデーの回数（年）</label>
+            <label for="countService">サービスデー / メンバーデーの回数</label>
             <input id="countService" type="number" min="0" value="3">
           </div>
         </div>
 
-        <div style="margin-top:16px;" class="grid grid-cols-3">
-          <div>
-            <label for="countIMAX">IMAXで観る回数（年）</label>
-            <input id="countIMAX" type="number" min="0" value="2">
-            <div class="field-note">
-              「通常料金で観る回数」のうち、IMAXで観る回数のイメージです。
+        <div class="imax-section">
+          <div class="imax-section-label">IMAX追加料金の対象</div>
+          <div class="grid grid-cols-3">
+            <div>
+              <label for="countIMAX">IMAXで観る回数</label>
+              <input id="countIMAX" type="number" min="0" value="2">
             </div>
           </div>
         </div>
@@ -136,7 +143,7 @@
       <div class="card card-sim">
         <div class="section-label">シミュレーション条件</div>
         <h2>コンセッションの利用頻度</h2>
-        <label>映画鑑賞に対して、どのくらいの頻度でコンセッションを購入しますか？</label>
+        <label>映画鑑賞に対して、どのくらいの頻度でコンセッション（ポップコーンなどの軽食やドリンク）を購入しますか？</label>
         <div class="radio-group" style="margin-top:8px;">
           <label><input type="radio" name="concessionFreq" value="0" checked> 0回（買わない）</label>
           <label><input type="radio" name="concessionFreq" value="1"> 毎回（1/1）</label>
