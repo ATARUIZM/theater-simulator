@@ -23,15 +23,6 @@ const PLANS_TOHO = [
     pointsPerFree: 240
     },
     {
-    id: "tohoOnePremium",
-    name: "TOHO ONE プレミアム",
-    annualFee: 3000,
-    pointRule: "perYen",
-    pointsPer100Yen: 2,
-    pointsPerMovie: 0,
-    pointsPerFree: 240
-    },
-    {
     id: "oldToho",
     name: "旧TOHOシネマズ会員サービス",
     annualFee: 300,
